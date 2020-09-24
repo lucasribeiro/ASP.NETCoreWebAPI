@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "I:\\Udemy\\ASP Net Core Web API\\Lucas\\MimicAPI\\MimicAPI\\MimicAPI.csproj": {}
+    "I:\\Udemy\\ASP Net Core Web API\\Lucas\\ASP.NETCoreWebAPI\\MimicAPI\\MimicAPI\\MimicAPI.csproj": {}
   },
   "projects": {
-    "I:\\Udemy\\ASP Net Core Web API\\Lucas\\MimicAPI\\MimicAPI\\MimicAPI.csproj": {
+    "I:\\Udemy\\ASP Net Core Web API\\Lucas\\ASP.NETCoreWebAPI\\MimicAPI\\MimicAPI\\MimicAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\MimicAPI\\MimicAPI\\MimicAPI.csproj",
+        "projectUniqueName": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\ASP.NETCoreWebAPI\\MimicAPI\\MimicAPI\\MimicAPI.csproj",
         "projectName": "MimicAPI",
-        "projectPath": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\MimicAPI\\MimicAPI\\MimicAPI.csproj",
+        "projectPath": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\ASP.NETCoreWebAPI\\MimicAPI\\MimicAPI\\MimicAPI.csproj",
         "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-        "outputPath": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\MimicAPI\\MimicAPI\\obj\\",
+        "outputPath": "I:\\Udemy\\ASP Net Core Web API\\Lucas\\ASP.NETCoreWebAPI\\MimicAPI\\MimicAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
@@ -41,6 +41,32 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[4.7.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -59,7 +85,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
         }
       }
     }
