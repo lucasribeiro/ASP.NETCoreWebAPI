@@ -2,15 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MimicAPI.Database;
+using MimicAPI.Helpers;
+using MimicAPI.Repositories;
+using MimicAPI.Repositories.Contracts;
 
 namespace MimicAPI
 {
@@ -29,12 +34,23 @@ namespace MimicAPI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            #region AutoMapper
+            var config = new MapperConfiguration(cfg => {
+                cfg.AddProfile(new DTOMapperProfile());
+            });
+            IMapper mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
+            #endregion
+
             services.AddDbContext<MimicContext>(opt =>
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+
             services.AddMvc(opt => opt.EnableEndpointRouting = false);
+            services.AddScoped<IPalavraRepository, PalavraReporitory>(); // injecao por dependencia
+
             //services.AddMvc(opt => opt.ena);
 
         }
@@ -54,7 +70,7 @@ namespace MimicAPI
             app.UseEndpoints(endpoints =>
             {                
                 endpoints.MapControllerRoute(
-                    name: "default",
+                    name: "MimicRoute",
                     pattern: "api/{controller}/{action}/{id?}");
                 endpoints.MapRazorPages();
             });
