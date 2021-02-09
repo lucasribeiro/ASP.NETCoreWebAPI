@@ -2,7 +2,6 @@ I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debu
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\appsettings.json
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\Properties\launchSettings.json
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\MimicAPI.exe
-I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.csprojAssemblyReference.cache
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.AssemblyInfoInputs.cache
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.AssemblyInfo.cs
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.RazorTargetAssemblyInfo.cache
@@ -58,5 +57,5 @@ I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debu
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.genruntimeconfig.cache
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Design.dll
 I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\AutoMapper.dll
-I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.csproj.CoreCompileInputs.cache
-I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.MvcApplicationPartsAssemblyInfo.cache
+I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.Versioning.dll
+I:\Udemy\ASP Net Core Web API\Lucas\ASP.NETCoreWebAPI\MimicAPI\MimicAPI\obj\Debug\netcoreapp3.1\MimicAPI.csprojAssemblyReference.cache

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MimicAPI.Database;
 using MimicAPI.Helpers;
-using MimicAPI.Repositories;
-using MimicAPI.Repositories.Contracts;
+using MimicAPI.V1.Repositories;
+using MimicAPI.V1.Repositories.Contracts;
 
 namespace MimicAPI
 {
@@ -50,6 +51,13 @@ namespace MimicAPI
 
             services.AddMvc(opt => opt.EnableEndpointRouting = false);
             services.AddScoped<IPalavraRepository, PalavraReporitory>(); // injecao por dependencia
+            services.AddApiVersioning(cfg =>
+            {
+                cfg.ReportApiVersions = true;
+                //cfg.ApiVersionReader = new HeaderApiVersionReader("api-version"); // POde ser passado pelo Header
+                cfg.AssumeDefaultVersionWhenUnspecified = true;
+                cfg.DefaultApiVersion = new ApiVersion(1, 0);
+            });
 
             //services.AddMvc(opt => opt.ena);
 
@@ -66,17 +74,18 @@ namespace MimicAPI
             app.UseStatusCodePages();
             app.UseMvc();
             app.UseRouting();
+            app.UseMvcWithDefaultRoute();
 
-            app.UseEndpoints(endpoints =>
-            {                
-                endpoints.MapControllerRoute(
-                    name: "MimicRoute",
-                    pattern: "api/{controller}/{action}/{id?}");
-                endpoints.MapRazorPages();
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllerRoute(
+            //        name: "MimicRoute",
+            //        pattern: "api/v{version:apiVersion}/{controller}/{action}/{id?}");
+            //    endpoints.MapRazorPages();
+            //});
 
-         
-           
+
+
         }
     }
 }
