@@ -10,6 +10,7 @@ namespace MimicAPI.V1.Models
     {
         public int Id { get; set; }
         [Required]
+        [MaxLength(150)]
         public string Nome { get; set; }
         public int Pontuacao { get; set; }
         public bool Ativo { get; set; }

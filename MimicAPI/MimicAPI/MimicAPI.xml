@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MimicAPI</name>
+    </assembly>
+    <members>
+        <member name="M:MimicAPI.V1.Controllers.PalavrasController.ObterTodas(MimicAPI.Helpers.PalavraUrlQuery)">
+            <summary>
+            Recupera todas as palavras existentes
+            </summary>
+            <param name="query">Filtro de pesquisa</param>
+            <returns>Listagem de palavras</returns>
+        </member>
+        <member name="M:MimicAPI.V1.Controllers.PalavrasController.Obter(System.Int32)">
+            <summary>
+            Recupera a palavra por identificador
+            </summary>
+            <param name="id">Identificardor da palavra</param>
+            <returns>Retorna o objeto palavra</returns>
+        </member>
+        <member name="M:MimicAPI.V1.Controllers.PalavrasController.Cadastrar(MimicAPI.V1.Models.Palavra)">
+            <summary>
+            Realiza o cadastro da palavra
+            </summary>
+            <param name="palavra">Objeto palavra</param>
+            <returns>Retorna o objeto palavra cadastrado com seu identificador</returns>
+        </member>
+        <member name="M:MimicAPI.V1.Controllers.PalavrasController.Atualizar(System.Int32,MimicAPI.V1.Models.Palavra)">
+            <summary>
+            Atualiza uma palavra
+            </summary>
+            <param name="id">Identificador da palavra</param>
+            <param name="palavra">Objeto palavra com os dados para alteração.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MimicAPI.V1.Controllers.PalavrasController.Deletar(System.Int32)">
+            <summary>
+            Remove uma palavra
+            </summary>
+            <param name="id">Identificador da palavra</param>
+            <returns></returns>
+        </member>
+        <member name="M:MimicAPI.V2.Controllers.PalavrasController.ObterTodas">
+            <summary>
+            Recupera todas as palavras existentes
+            </summary>
+            <param name="query">Filtro de pesquisa</param>
+            <returns>Listagem de palavras</returns>
+        </member>
+    </members>
+</doc>
