@@ -11,44 +11,48 @@ namespace MinhasTarefasAPI.Repositories
     public class TarefaRepository : ITarefaRepository
     {
         private readonly MinhasTarefasContext _banco;
-
-        public TarefaRepository(MinhasTarefasContext context)
+        public TarefaRepository(MinhasTarefasContext banco)
         {
-            _banco = context;
+            _banco = banco;
         }
 
-        public List<Tarefa> Restauracao(ApplicationUser usuario, DateTime dataUlimaSincronizacao)
+        public List<Tarefa> Restauracao(ApplicationUser usuario, DateTime dataUltimaSincronizacao)
         {
-            var query = _banco.Tarefas.Where(u => u.UsuarioId == usuario.Id).AsQueryable();
+            var query = _banco.Tarefas.Where(a=>a.UsuarioId == usuario.Id).AsQueryable();
 
-            if (dataUlimaSincronizacao != null)
+            if (dataUltimaSincronizacao != null)
             {
-                query.Where(a => a.Criado >= dataUlimaSincronizacao ||
-                    a.Atualizado >= dataUlimaSincronizacao);
-
-                _banco.Tarefas.Where(a => a.UsuarioId == usuario.Id);
+                query.Where(a => a.Criado >= dataUltimaSincronizacao || a.Atualizado >= dataUltimaSincronizacao);
             }
 
             return query.ToList<Tarefa>();
-            
         }
 
+        /* Tarefa IdTarefaAPI - App IdTarefaAPI = Tarefa Local */
         public List<Tarefa> Sincronizacao(List<Tarefa> tarefas)
         {
+            var tarefasNovas = tarefas.Where(a => a.IdTarefaApi == 0).ToList();
+            var tarefasExcluidasAtualizadas = tarefas.Where(a => a.IdTarefaApi != 0).ToList();
 
-            // Cadastrar de novos registros
-            var tarefasNovas = tarefas.Where(t => t.IdTarefaApi == 0);
-            foreach (var tarefa in tarefasNovas)
-                _banco.Tarefas.Add(tarefa);
+            // Cadastrar novos registros
+            if (tarefasNovas.Count() > 0) { 
+                foreach (var tarefa in tarefasNovas)
+                {
+                    _banco.Tarefas.Add(tarefa);
+                }
+            }
 
-
-            // Atualização de novos registros
-            var tarefasExcluidasAtualizadas = tarefas.Where(t => t.IdTarefaApi != 0);
-            foreach (var tarefa in tarefasExcluidasAtualizadas)
-                _banco.Tarefas.Update(tarefa);
+            
+            // Atualização de registro (Excluido)
+            if (tarefasExcluidasAtualizadas.Count() > 0)
+            {
+                foreach (var tarefa in tarefasExcluidasAtualizadas)
+                {
+                    _banco.Tarefas.Update(tarefa);
+                }
+            }
 
             _banco.SaveChanges();
-
 
             return tarefasNovas.ToList();
         }

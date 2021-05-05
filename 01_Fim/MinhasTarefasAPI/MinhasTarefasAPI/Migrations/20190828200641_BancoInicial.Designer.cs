@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinhasTarefasAPI.Database;
 
 namespace MinhasTarefasAPI.Migrations
 {
     [DbContext(typeof(MinhasTarefasContext))]
-    partial class MinhasTarefasContextModelSnapshot : ModelSnapshot
+    [Migration("20190828200641_BancoInicial")]
+    partial class BancoInicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +179,7 @@ namespace MinhasTarefasAPI.Migrations
 
             modelBuilder.Entity("MinhasTarefasAPI.Models.Tarefa", b =>
                 {
-                    b.Property<int>("IdTarefaApi")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Atualizado");
@@ -190,10 +192,6 @@ namespace MinhasTarefasAPI.Migrations
 
                     b.Property<string>("Descricao");
 
-                    b.Property<bool>("Excluido");
-
-                    b.Property<int>("IdTarefaApp");
-
                     b.Property<string>("Local");
 
                     b.Property<string>("Tipo");
@@ -202,7 +200,7 @@ namespace MinhasTarefasAPI.Migrations
 
                     b.Property<string>("UsuarioId");
 
-                    b.HasKey("IdTarefaApi");
+                    b.HasKey("Id");
 
                     b.HasIndex("UsuarioId");
 
