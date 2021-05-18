@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MinhasTarefasAPI.Models;
 using MinhasTarefasAPI.Repositories.Contracts;
 
@@ -40,7 +43,7 @@ namespace MinhasTarefasAPI.Controllers
                     _signInManager.SignInAsync(usuario, false);
 
                     //retorna o Token (JWT)
-                    return Ok();
+                    return Ok(BuildToken(usuario));
                 }
                 else
                 {
@@ -83,6 +86,18 @@ namespace MinhasTarefasAPI.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        private string BuildToken(ApplicationUser usuario)
+        {
+            var claims = new[]
+            {
+                //new Claim(JwtRegisteredClaimNames.Aud, "www.meuapp.com.br")
+                new Claim(JwtRegisteredClaimNames.Email, usuario.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-minhas-tarefas-lucas")); // Recomendad criar no appsettings.json
+            
         }
     }
 }
