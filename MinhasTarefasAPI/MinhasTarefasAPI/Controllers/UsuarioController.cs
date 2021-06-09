@@ -88,15 +88,30 @@ namespace MinhasTarefasAPI.Controllers
             }
         }
 
-        private string BuildToken(ApplicationUser usuario)
+        private object BuildToken(ApplicationUser usuario)
         {
             var claims = new[]
             {
                 //new Claim(JwtRegisteredClaimNames.Aud, "www.meuapp.com.br")
-                new Claim(JwtRegisteredClaimNames.Email, usuario.Email)
+                new Claim(JwtRegisteredClaimNames.Email, usuario.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Id)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-minhas-tarefas-lucas")); // Recomendad criar no appsettings.json
+            var sign = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var exp = DateTime.UtcNow.AddHours(1);
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: null, // quem está emitindo o token
+                audience: null, // pra quem esta sendo gerado ( normalmente um site ou app)
+                claims: claims,
+                expires: exp,
+                signingCredentials: sign
+
+            );
+
+            var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new { token = stringToken, expiration = exp };
             
         }
     }
