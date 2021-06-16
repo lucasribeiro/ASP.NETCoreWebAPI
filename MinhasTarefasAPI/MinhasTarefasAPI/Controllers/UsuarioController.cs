@@ -40,7 +40,7 @@ namespace MinhasTarefasAPI.Controllers
                 if (usuario != null)
                 {
                     //Login no Identity
-                    _signInManager.SignInAsync(usuario, false);
+                    //_signInManager.SignInAsync(usuario, false);
 
                     //retorna o Token (JWT)
                     return Ok(BuildToken(usuario));
@@ -111,7 +111,7 @@ namespace MinhasTarefasAPI.Controllers
 
             var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return new { token = stringToken, expiration = exp };
+            return new { token = stringToken, expiration = exp, refreshToken = "", expirationRefreshToken = exp };
             
         }
     }
