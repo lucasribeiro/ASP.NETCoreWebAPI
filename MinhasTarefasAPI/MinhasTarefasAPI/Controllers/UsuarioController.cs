@@ -19,13 +19,15 @@ namespace MinhasTarefasAPI.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ITokenRepository _tokenRepository;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        public UsuarioController(IUsuarioRepository usuarioRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public UsuarioController(IUsuarioRepository usuarioRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ITokenRepository tokenRepository)
         {
             _usuarioRepository = usuarioRepository;
             _signInManager = signInManager;
             _userManager = userManager;
+            _tokenRepository = tokenRepository;
         }
 
         [HttpPost("login")]
@@ -43,6 +45,19 @@ namespace MinhasTarefasAPI.Controllers
                     //_signInManager.SignInAsync(usuario, false);
 
                     //retorna o Token (JWT)
+                    var token = BuildToken(usuario);
+
+                    //salvar o token na base
+                    var tokenModel = new Token()
+                    {
+                        RefreshToken = token.RefreshToken,
+                        ExpirationRefreshToken = token.ExpirationRefreshToken,
+                        ExpitarionToken = token.Expiration,
+                        Usuario = usuario,
+                        Criado = DateTime.Now,
+                        Utilizado = false
+                    };
+                    _tokenRepository.Cadastrar(tokenModel);
                     return Ok(BuildToken(usuario));
                 }
                 else
@@ -88,7 +103,7 @@ namespace MinhasTarefasAPI.Controllers
             }
         }
 
-        private object BuildToken(ApplicationUser usuario)
+        private TokenDTO BuildToken(ApplicationUser usuario)
         {
             var claims = new[]
             {
@@ -110,9 +125,12 @@ namespace MinhasTarefasAPI.Controllers
             );
 
             var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
+            var refreshToken = Guid.NewGuid().ToString();
+            var expRefreshToken = DateTime.UtcNow.AddHours(2);
 
-            return new { token = stringToken, expiration = exp, refreshToken = "", expirationRefreshToken = exp };
-            
+            var tokenDTO = new  TokenDTO { Token = stringToken, Expiration = exp, ExpirationRefreshToken = expRefreshToken, RefreshToken = refreshToken };
+            return tokenDTO;
+
         }
     }
 }

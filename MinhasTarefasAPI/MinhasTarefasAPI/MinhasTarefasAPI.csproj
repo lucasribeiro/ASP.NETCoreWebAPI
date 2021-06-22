@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190828200641_BancoInicial.cs" />
+    <Compile Remove="Migrations\20190828200641_BancoInicial.Designer.cs" />
+    <Compile Remove="Migrations\20190830200147_TarefaSincronizacao.cs" />
+    <Compile Remove="Migrations\20190830200147_TarefaSincronizacao.Designer.cs" />
+    <Compile Remove="Migrations\20210622001336_Token.cs" />
+    <Compile Remove="Migrations\20210622001336_Token.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />

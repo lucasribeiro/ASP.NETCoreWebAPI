@@ -46,6 +46,7 @@ namespace MinhasTarefasAPI
             /* Repositories */
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<ITarefaRepository, TarefaRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddJsonOptions(
