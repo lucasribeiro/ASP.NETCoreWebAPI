@@ -44,21 +44,7 @@ namespace MinhasTarefasAPI.Controllers
                     //Login no Identity
                     //_signInManager.SignInAsync(usuario, false);
 
-                    //retorna o Token (JWT)
-                    var token = BuildToken(usuario);
-
-                    //salvar o token na base
-                    var tokenModel = new Token()
-                    {
-                        RefreshToken = token.RefreshToken,
-                        ExpirationRefreshToken = token.ExpirationRefreshToken,
-                        ExpitarionToken = token.Expiration,
-                        Usuario = usuario,
-                        Criado = DateTime.Now,
-                        Utilizado = false
-                    };
-                    _tokenRepository.Cadastrar(tokenModel);
-                    return Ok(BuildToken(usuario));
+                    return Ok(GetUserToken(usuario));
                 }
                 else
                 {
@@ -69,6 +55,26 @@ namespace MinhasTarefasAPI.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+       
+
+        [HttpPost("Renovar")]
+        public ActionResult Renovar([FromBody] TokenDTO tokenDTO)
+        {
+            var refreshTokenDB = _tokenRepository.Obter(tokenDTO.RefreshToken);
+
+            if (refreshTokenDB == null)
+                return NotFound();
+
+            //Desativa token ja utilizado
+            refreshTokenDB.Atualizado = DateTime.Now;
+            refreshTokenDB.Utilizado = true;
+            _tokenRepository.Atualizar(refreshTokenDB);
+
+            // gera um novo Token
+            var usuario = _usuarioRepository.Obter(refreshTokenDB.UsuarioId);
+            return Ok(GetUserToken(usuario));
+
         }
 
         [HttpPost("")]
@@ -131,6 +137,25 @@ namespace MinhasTarefasAPI.Controllers
             var tokenDTO = new  TokenDTO { Token = stringToken, Expiration = exp, ExpirationRefreshToken = expRefreshToken, RefreshToken = refreshToken };
             return tokenDTO;
 
+        }
+
+        private TokenDTO GetUserToken(ApplicationUser usuario)
+        {
+            //retorna o Token (JWT)
+            var token = BuildToken(usuario);
+
+            //salvar o token na base
+            var tokenModel = new Token()
+            {
+                RefreshToken = token.RefreshToken,
+                ExpirationRefreshToken = token.ExpirationRefreshToken,
+                ExpitarionToken = token.Expiration,
+                Usuario = usuario,
+                Criado = DateTime.Now,
+                Utilizado = false
+            };
+            _tokenRepository.Cadastrar(tokenModel);
+            return token;
         }
     }
 }

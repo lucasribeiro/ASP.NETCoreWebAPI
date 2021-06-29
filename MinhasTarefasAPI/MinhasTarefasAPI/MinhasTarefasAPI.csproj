@@ -12,6 +12,8 @@
     <Compile Remove="Migrations\20190830200147_TarefaSincronizacao.Designer.cs" />
     <Compile Remove="Migrations\20210622001336_Token.cs" />
     <Compile Remove="Migrations\20210622001336_Token.Designer.cs" />
+    <Compile Remove="Migrations\20210629000622_AddFKToken.cs" />
+    <Compile Remove="Migrations\20210629000622_AddFKToken.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
