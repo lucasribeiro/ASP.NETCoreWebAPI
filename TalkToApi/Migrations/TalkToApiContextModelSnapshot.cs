@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TalkToApi.Repository;
+using TalkToApi.Repositories.Context;
 
 namespace TalkToApi.Migrations
 {
@@ -207,6 +207,33 @@ namespace TalkToApi.Migrations
                     b.ToTable("Message");
                 });
 
+            modelBuilder.Entity("TalkToApi.V1.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<DateTime>("ExpirationRefreshToken");
+
+                    b.Property<DateTime>("ExpitarionToken");
+
+                    b.Property<string>("RefreshToken");
+
+                    b.Property<DateTime?>("UpdatedAt");
+
+                    b.Property<bool>("Used");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Token");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -261,6 +288,13 @@ namespace TalkToApi.Migrations
                     b.HasOne("TalkToApi.V1.Models.ApplicationUser", "To")
                         .WithMany()
                         .HasForeignKey("ToId");
+                });
+
+            modelBuilder.Entity("TalkToApi.V1.Models.Token", b =>
+                {
+                    b.HasOne("TalkToApi.V1.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

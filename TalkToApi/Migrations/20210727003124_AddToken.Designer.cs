@@ -10,8 +10,8 @@ using TalkToApi.Repositories.Context;
 namespace TalkToApi.Migrations
 {
     [DbContext(typeof(TalkToApiContext))]
-    [Migration("20210720003127_BancoInicial")]
-    partial class BancoInicial
+    [Migration("20210727003124_AddToken")]
+    partial class AddToken
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -209,6 +209,33 @@ namespace TalkToApi.Migrations
                     b.ToTable("Message");
                 });
 
+            modelBuilder.Entity("TalkToApi.V1.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<DateTime>("ExpirationRefreshToken");
+
+                    b.Property<DateTime>("ExpitarionToken");
+
+                    b.Property<string>("RefreshToken");
+
+                    b.Property<DateTime?>("UpdatedAt");
+
+                    b.Property<bool>("Used");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Token");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -263,6 +290,13 @@ namespace TalkToApi.Migrations
                     b.HasOne("TalkToApi.V1.Models.ApplicationUser", "To")
                         .WithMany()
                         .HasForeignKey("ToId");
+                });
+
+            modelBuilder.Entity("TalkToApi.V1.Models.Token", b =>
+                {
+                    b.HasOne("TalkToApi.V1.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

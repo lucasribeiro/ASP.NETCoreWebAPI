@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TalkToApi.V1.Models;
 
-namespace TalkToApi.Repository
+namespace TalkToApi.Repositories.Context
 {
     public class TalkToApiContext : IdentityDbContext<ApplicationUser>
     {
@@ -16,5 +16,6 @@ namespace TalkToApi.Repository
         }
 
         public DbSet<Message> Message { get; set; }
+        public DbSet<Token> Token { get; set; }
     }
 }
