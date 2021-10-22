@@ -11,6 +11,7 @@ using TalkToApi.V1.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TalkToApi.V1.Models.DTO;
 
 namespace TalkToApi.V1.Controllers
 {
