@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TalkToApi.V1.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TalkToApi.V1.Controllers
 {
@@ -35,8 +36,8 @@ namespace TalkToApi.V1.Controllers
         [HttpPost("login")]
         public ActionResult Login([FromBody] UserDTO usuarioDTO)
         {
-            ModelState.Remove("Nome");
-            ModelState.Remove("ConfirmacaoSenha");
+            ModelState.Remove("name");
+            ModelState.Remove("passwordConfirmation");
 
             if (ModelState.IsValid)
             {
@@ -60,7 +61,7 @@ namespace TalkToApi.V1.Controllers
         }
 
 
-        [HttpPost("Renovar")]
+        [HttpPost("Renew")]
         public ActionResult Renew([FromBody] TokenDTO tokenDTO)
         {
             var refreshTokenDB = _tokenRepository.Get(tokenDTO.RefreshToken);
@@ -78,9 +79,9 @@ namespace TalkToApi.V1.Controllers
             return Ok(GetUserToken(usuario));
 
         }
-
+        
         [HttpPost("")]
-        public ActionResult Add([FromBody] UserDTO usuarioDTO)
+        public ActionResult Add ([FromBody] UserDTO usuarioDTO)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +90,7 @@ namespace TalkToApi.V1.Controllers
                 usuario.UserName = usuarioDTO.Email;
                 usuario.Email = usuarioDTO.Email;
 
-                var resultado = _userManager.CreateAsync(usuario, usuarioDTO.Password).Result;
+                var resultado = _userManager.CreateAsync(usuario, usuarioDTO.Password).Result;                
 
                 if (!resultado.Succeeded)
                 {
@@ -110,6 +111,67 @@ namespace TalkToApi.V1.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public ActionResult Update(string id, [FromBody] UserDTO usuarioDTO)
+        {
+
+            ApplicationUser usuario = _userManager.GetUserAsync(HttpContext.User).Result;
+
+            if (usuario.Id != id)
+            {
+                return Forbid();
+            }
+
+            if (ModelState.IsValid)
+            {
+                usuario.FullName = usuarioDTO.Name;
+                usuario.UserName = usuarioDTO.Email;
+                usuario.Email = usuarioDTO.Email;
+                usuario.Slogan = usuarioDTO.Slogan;
+
+                var resultado = _userManager.UpdateAsync(usuario).Result;
+                _userManager.RemovePasswordAsync(usuario);
+                _userManager.AddPasswordAsync(usuario, usuarioDTO.Password);
+
+                if (!resultado.Succeeded)
+                {
+                    List<string> erros = new List<string>();
+                    foreach (var erro in resultado.Errors)
+                    {
+                        erros.Add(erro.Description);
+                    }
+                    return UnprocessableEntity(erros);
+                }
+                else
+                {
+                    return Ok(usuario);
+                }
+            }
+            else
+            {
+                return UnprocessableEntity(ModelState);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public ActionResult GetUser(string id)
+        {
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+
+        [Authorize]
+        [HttpGet("")]
+        public ActionResult GetAll()
+        {
+            return Ok(_userManager.Users);
         }
 
         private TokenDTO BuildToken(ApplicationUser usuario)
