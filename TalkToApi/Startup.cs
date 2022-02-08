@@ -57,6 +57,7 @@ namespace TalkToApi
             });
 
 
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
 

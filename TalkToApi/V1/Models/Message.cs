@@ -11,12 +11,20 @@ namespace TalkToApi.V1.Models
     {
         [Key]
         public int Id { get; set; }
+
         [ForeignKey("FromId")]
         public ApplicationUser From { get; set; }
+
         [ForeignKey("ToId")]
         public ApplicationUser To { get; set; }
+
+        [Required]
         public string FromId { get; set; }
+
+        [Required]
         public string ToId { get; set; }
+
+        [Required]
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
 
