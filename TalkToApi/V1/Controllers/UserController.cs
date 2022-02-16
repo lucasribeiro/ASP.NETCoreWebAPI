@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using TalkToApi.V1.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace TalkToApi.V1.Controllers
 {
@@ -21,12 +22,14 @@ namespace TalkToApi.V1.Controllers
     [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IUserRepository _usuarioRepository;
         private readonly ITokenRepository _tokenRepository;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        public UserController(IUserRepository usuarioRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ITokenRepository tokenRepository)
+        public UserController(IMapper mapper, IUserRepository usuarioRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ITokenRepository tokenRepository)
         {
+            _mapper = mapper;
             _usuarioRepository = usuarioRepository;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -80,17 +83,17 @@ namespace TalkToApi.V1.Controllers
 
         }
         
-        [HttpPost("")]
+        [HttpPost("", Name = "Add")]
         public ActionResult Add ([FromBody] UserDTO usuarioDTO)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser usuario = new ApplicationUser();
-                usuario.FullName = usuarioDTO.Name;
-                usuario.UserName = usuarioDTO.Email;
-                usuario.Email = usuarioDTO.Email;
+                ApplicationUser user = new ApplicationUser();
+                user.FullName = usuarioDTO.Name;
+                user.UserName = usuarioDTO.Email;
+                user.Email = usuarioDTO.Email;
 
-                var resultado = _userManager.CreateAsync(usuario, usuarioDTO.Password).Result;                
+                var resultado = _userManager.CreateAsync(user, usuarioDTO.Password).Result;                
 
                 if (!resultado.Succeeded)
                 {
@@ -103,7 +106,13 @@ namespace TalkToApi.V1.Controllers
                 }
                 else
                 {
-                    return Ok(usuario);
+                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("ADD", new { id = userDTO.Id }), "POST"));
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                    userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+
+                    return Ok(userDTO);
                 }
 
             }
@@ -114,27 +123,27 @@ namespace TalkToApi.V1.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "Update")]
         public ActionResult Update(string id, [FromBody] UserDTO usuarioDTO)
         {
 
-            ApplicationUser usuario = _userManager.GetUserAsync(HttpContext.User).Result;
+            ApplicationUser user = _userManager.GetUserAsync(HttpContext.User).Result;
 
-            if (usuario.Id != id)
+            if (user.Id != id)
             {
                 return Forbid();
             }
 
             if (ModelState.IsValid)
             {
-                usuario.FullName = usuarioDTO.Name;
-                usuario.UserName = usuarioDTO.Email;
-                usuario.Email = usuarioDTO.Email;
-                usuario.Slogan = usuarioDTO.Slogan;
+                user.FullName = usuarioDTO.Name;
+                user.UserName = usuarioDTO.Email;
+                user.Email = usuarioDTO.Email;
+                user.Slogan = usuarioDTO.Slogan;
 
-                var resultado = _userManager.UpdateAsync(usuario).Result;
-                _userManager.RemovePasswordAsync(usuario);
-                _userManager.AddPasswordAsync(usuario, usuarioDTO.Password);
+                var resultado = _userManager.UpdateAsync(user).Result;
+                _userManager.RemovePasswordAsync(user);
+                _userManager.AddPasswordAsync(user, usuarioDTO.Password);
 
                 if (!resultado.Succeeded)
                 {
@@ -147,7 +156,12 @@ namespace TalkToApi.V1.Controllers
                 }
                 else
                 {
-                    return Ok(usuario);
+                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+                                        
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+
+                    return Ok(userDTO);
                 }
             }
             else
@@ -157,21 +171,40 @@ namespace TalkToApi.V1.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public ActionResult GetUser(string id)
         {
             var user = _userManager.FindByIdAsync(id).Result;
             if (user == null)
                 return NotFound();
 
-            return Ok(user);
+            var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+
+            userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+            userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+
+            return Ok(userDTO);
         }
 
         [Authorize]
-        [HttpGet("")]
+        [HttpGet("", Name = "GetAll")]
         public ActionResult GetAll()
         {
-            return Ok(_userManager.Users);
+
+            var users = _userManager.Users.ToList();
+
+            var usersDTO = _mapper.Map<List<ApplicationUser>, List<UserDTO>>(users);
+
+            foreach (var userDTO in usersDTO)
+            {                
+                userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+            }
+
+            var list = new ListDTO<UserDTO>() { List = usersDTO };
+            list.Links.Add(new LinkDTO("_self", Url.Link("GetAll", null), "GET"));
+            
+            return Ok(list);
         }
 
         private TokenDTO BuildToken(ApplicationUser usuario)

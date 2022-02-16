@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,30 @@ namespace TalkToApi.V1.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        [Authorize]
+        [HttpPatch("{id}")]
+        public ActionResult PartialUpdate(int id, [FromBody]JsonPatchDocument<Message> jsonPatch)
+        {
+
+            // op = Operações
+            // path = campo a ser alterado/adicionado/substituido
+            // values = valor do campo
+            // JSONPatch = { "op": "add|remove|replace", "path": "text", "value" : "Mensagem Substituida!" }
+
+            if (jsonPatch == null)
+                return BadRequest();
+
+            var message = _messageRepository.Get(id);
+
+            jsonPatch.ApplyTo(message);
+
+            message.UpdateAt = DateTime.UtcNow;
+
+            _messageRepository.Update(message);
+
+            return Ok(message);
         }
     }
 }

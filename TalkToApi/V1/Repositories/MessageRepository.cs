@@ -17,9 +17,14 @@ namespace TalkToApi.V1.Repositories
             _banco = banco;
         }
 
+        public Message Get(int id)
+        {
+            return _banco.Message.Find(id);
+        }
+
         public List<Message> GetMessages(string userIdOne, string userIdTwo)
         {
-            return _banco.Message.Where(a => (a.FromId == userIdOne || a.FromId == userIdTwo) && (a.FromId == userIdTwo || a.ToId == userIdTwo)).ToList();
+            return _banco.Message.Where(a => (a.FromId == userIdOne || a.FromId == userIdTwo) && (a.ToId == userIdOne || a.ToId == userIdTwo)).ToList();
         }
 
         public void Add(Message message)
@@ -28,6 +33,11 @@ namespace TalkToApi.V1.Repositories
             _banco.SaveChanges();
         }
 
+        public void Update(Message message)
+        {
+            _banco.Message.Update(message);
+            _banco.SaveChanges();
+        }
         
     }
 }
