@@ -13,8 +13,7 @@ namespace TalkToApi.Helpers
             CreateMap<ApplicationUser, UserDTO>()
                 .ForMember(dest=> dest.Name, orig=> orig.MapFrom(src=>src.FullName));
 
-
-            //CreateMap<PaginationList<Palavra>, PaginationList<PalavraDTO>>();
+            CreateMap<Message, MessageDTO>();
         }
     }
 }
