@@ -14,6 +14,7 @@ using System.Text;
 using TalkToApi.V1.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using TalkToApi.Helpers.Contants;
 
 namespace TalkToApi.V1.Controllers
 {
@@ -84,7 +85,7 @@ namespace TalkToApi.V1.Controllers
         }
         
         [HttpPost("", Name = "Add")]
-        public ActionResult Add ([FromBody] UserDTO usuarioDTO)
+        public ActionResult Add ([FromBody] UserDTO usuarioDTO, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (ModelState.IsValid)
             {
@@ -106,13 +107,21 @@ namespace TalkToApi.V1.Controllers
                 }
                 else
                 {
-                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+                    if (mediaType == CustomMediaType.Hateoas)
+                    {
+                        var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
 
-                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("ADD", new { id = userDTO.Id }), "POST"));
-                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
-                    userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                        userDTO.Links.Add(new LinkDTO("_self", Url.Link("ADD", new { id = userDTO.Id }), "POST"));
+                        userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                        userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
 
-                    return Ok(userDTO);
+                        return Ok(userDTO);
+                    }
+                    else
+                    {
+                        var usersStandardDTO = _mapper.Map<ApplicationUser, UserStandardDTO>(user);
+                        return Ok(usersStandardDTO);
+                    }
                 }
 
             }
@@ -124,7 +133,7 @@ namespace TalkToApi.V1.Controllers
 
         [Authorize]
         [HttpPut("{id}", Name = "Update")]
-        public ActionResult Update(string id, [FromBody] UserDTO usuarioDTO)
+        public ActionResult Update(string id, [FromBody] UserDTO usuarioDTO, [FromHeader(Name = "Accept")] string mediaType)
         {
 
             ApplicationUser user = _userManager.GetUserAsync(HttpContext.User).Result;
@@ -156,12 +165,20 @@ namespace TalkToApi.V1.Controllers
                 }
                 else
                 {
-                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
-                                        
-                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
-                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                    if (mediaType == CustomMediaType.Hateoas)
+                    {
+                        var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
 
-                    return Ok(userDTO);
+                        userDTO.Links.Add(new LinkDTO("_self", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                        userDTO.Links.Add(new LinkDTO("_get", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+
+                        return Ok(userDTO);
+                    }
+                    else
+                    {
+                        var usersStandardDTO = _mapper.Map<ApplicationUser, UserStandardDTO>(user);
+                        return Ok(usersStandardDTO);
+                    }
                 }
             }
             else
@@ -172,39 +189,57 @@ namespace TalkToApi.V1.Controllers
 
         [Authorize]
         [HttpGet("{id}", Name = "GetUser")]
-        public ActionResult GetUser(string id)
+        public ActionResult GetUser(string id, [FromHeader(Name = "Accept")] string mediaType)
         {
             var user = _userManager.FindByIdAsync(id).Result;
             if (user == null)
                 return NotFound();
 
-            var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+            if (mediaType == CustomMediaType.Hateoas)
+            {
 
-            userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
-            userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
 
-            return Ok(userDTO);
+                userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+
+                return Ok(userDTO);
+            }
+            else
+            {
+                var usersStandardDTO = _mapper.Map<ApplicationUser, UserStandardDTO>(user);
+                return Ok(usersStandardDTO);
+            }
         }
 
         [Authorize]
         [HttpGet("", Name = "GetAll")]
-        public ActionResult GetAll()
+        public ActionResult GetAll([FromHeader(Name = "Accept")] string mediaType)
         {
 
             var users = _userManager.Users.ToList();
 
-            var usersDTO = _mapper.Map<List<ApplicationUser>, List<UserDTO>>(users);
+            if (mediaType == CustomMediaType.Hateoas)
+            {
 
-            foreach (var userDTO in usersDTO)
-            {                
-                userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
-                userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                var usersDTO = _mapper.Map<List<ApplicationUser>, List<UserDTO>>(users);
+
+                foreach (var userDTO in usersDTO)
+                {
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("GetUser", new { id = userDTO.Id }), "GET"));
+                    userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                }
+
+                var list = new ListDTO<UserDTO>() { List = usersDTO };
+                list.Links.Add(new LinkDTO("_self", Url.Link("GetAll", null), "GET"));
+
+                return Ok(list);
             }
-
-            var list = new ListDTO<UserDTO>() { List = usersDTO };
-            list.Links.Add(new LinkDTO("_self", Url.Link("GetAll", null), "GET"));
-            
-            return Ok(list);
+            else
+            {
+                var usersStandardDTO = _mapper.Map<List<ApplicationUser>, List<UserStandardDTO>>(users);
+                return Ok(usersStandardDTO);
+            }
         }
 
         private TokenDTO BuildToken(ApplicationUser usuario)

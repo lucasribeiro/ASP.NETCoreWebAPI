@@ -13,6 +13,9 @@ namespace TalkToApi.Helpers
             CreateMap<ApplicationUser, UserDTO>()
                 .ForMember(dest=> dest.Name, orig=> orig.MapFrom(src=>src.FullName));
 
+            CreateMap<ApplicationUser, UserStandardDTO>()
+               .ForMember(dest => dest.Name, orig => orig.MapFrom(src => src.FullName));
+
             CreateMap<Message, MessageDTO>();
         }
     }

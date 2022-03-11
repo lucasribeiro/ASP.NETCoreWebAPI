@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TalkToApi.Helpers.Contants;
 using TalkToApi.V1.Models;
 using TalkToApi.V1.Models.DTO;
 using TalkToApi.V1.Repositories.Contracts;
@@ -36,7 +37,7 @@ namespace TalkToApi.V1.Controllers
             }
             var messages = _messageRepository.GetMessages(useroneId, usertwoId);
 
-            if (mediaType == "application/vnd.talkto.hateoas+json")
+            if (mediaType == CustomMediaType.Hateoas)
             {
                 var messageList = _mapper.Map<List<Message>, List<MessageDTO>>(messages);
 
@@ -55,7 +56,7 @@ namespace TalkToApi.V1.Controllers
 
         [Authorize]
         [HttpPost("", Name = "AddMessage")]
-        public ActionResult Add([FromBody]Message message)
+        public ActionResult Add([FromBody]Message message, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (ModelState.IsValid)
             {
@@ -63,12 +64,19 @@ namespace TalkToApi.V1.Controllers
                 {
                     _messageRepository.Add(message);
 
-                    var messageDTO = _mapper.Map<Message, MessageDTO>(message);
+                    if (mediaType == CustomMediaType.Hateoas)
+                    {
+                        var messageDTO = _mapper.Map<Message, MessageDTO>(message);
 
-                    messageDTO.Links.Add(new LinkDTO("_self", Url.Link("AddMessage", null ), "POST"));
-                    messageDTO.Links.Add(new LinkDTO("_update", Url.Link("PartialUpdate", new { id = message.Id }), "PATCH"));
+                        messageDTO.Links.Add(new LinkDTO("_self", Url.Link("AddMessage", null), "POST"));
+                        messageDTO.Links.Add(new LinkDTO("_update", Url.Link("PartialUpdate", new { id = message.Id }), "PATCH"));
 
-                    return Ok(messageDTO);
+                        return Ok(messageDTO);
+                    }
+                    else
+                    {
+                        return Ok(message);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -83,7 +91,7 @@ namespace TalkToApi.V1.Controllers
 
         [Authorize]
         [HttpPatch("{id}", Name = "PartialUpdate")]
-        public ActionResult PartialUpdate(int id, [FromBody]JsonPatchDocument<Message> jsonPatch)
+        public ActionResult PartialUpdate(int id, [FromBody]JsonPatchDocument<Message> jsonPatch, [FromHeader(Name = "Accept")] string mediaType)
         {
 
             // op = Operações
@@ -102,12 +110,20 @@ namespace TalkToApi.V1.Controllers
 
             _messageRepository.Update(message);
 
-            var messageDTO = _mapper.Map<Message, MessageDTO>(message);
+            if (mediaType == CustomMediaType.Hateoas)
+            {
 
-            messageDTO.Links.Add(new LinkDTO("_self", Url.Link("Add", null), "POST"));
-            messageDTO.Links.Add(new LinkDTO("_self", Url.Link("PartialUpdate", new { id = message.Id }), "PATCH"));
+                var messageDTO = _mapper.Map<Message, MessageDTO>(message);
 
-            return Ok(messageDTO);
+                messageDTO.Links.Add(new LinkDTO("_self", Url.Link("Add", null), "POST"));
+                messageDTO.Links.Add(new LinkDTO("_self", Url.Link("PartialUpdate", new { id = message.Id }), "PATCH"));
+
+                return Ok(messageDTO);
+            }
+            else
+            {
+                return Ok(message);
+            }
         }
     }
 }
