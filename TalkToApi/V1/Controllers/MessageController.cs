@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,6 +17,7 @@ namespace TalkToApi.V1.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    //[EnableCors] // Defualt policy
     public class MessageController : ControllerBase
     {
         private readonly IMessageRepository _messageRepository;

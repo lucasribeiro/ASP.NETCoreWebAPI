@@ -15,12 +15,14 @@ using TalkToApi.V1.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using TalkToApi.Helpers.Contants;
+using Microsoft.AspNetCore.Cors;
 
 namespace TalkToApi.V1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    //[EnableCors("AnyOrigins")]
     public class UserController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -89,10 +91,7 @@ namespace TalkToApi.V1.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser();
-                user.FullName = usuarioDTO.Name;
-                user.UserName = usuarioDTO.Email;
-                user.Email = usuarioDTO.Email;
+                ApplicationUser user = _mapper.Map<UserDTO, ApplicationUser>(usuarioDTO);
 
                 var resultado = _userManager.CreateAsync(user, usuarioDTO.Password).Result;                
 
@@ -214,6 +213,7 @@ namespace TalkToApi.V1.Controllers
 
         [Authorize]
         [HttpGet("", Name = "GetAll")]
+        //[DisableCors()]
         public ActionResult GetAll([FromHeader(Name = "Accept")] string mediaType)
         {
 

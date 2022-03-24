@@ -67,6 +67,27 @@ namespace TalkToApi
                 op.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddCors(cfg =>
+            {
+                cfg.AddDefaultPolicy(policy =>
+                {
+                    policy
+                        .WithOrigins("https://localhost:44352", "http://localhost:44352")
+                        .WithMethods("GET", "POST")
+                        .WithHeaders("Accept", "Authorization")
+                        .SetIsOriginAllowedToAllowWildcardSubdomains(); // Aceita todos os subdominios ex.: empresa.com.br, app.empresa.com.br, web.empresa.com.br
+                });
+
+                // habilitar todos os sites com restrição
+                cfg.AddPolicy("AnyOrigin", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .WithMethods("GET")
+                        .AllowAnyHeader();
+                });
+            });
+
             services.AddMvc(cfg =>
             {
                 cfg.ReturnHttpNotAcceptable = true;
@@ -142,7 +163,14 @@ namespace TalkToApi
                 cfg.OperationFilter<ApiVersionOperationFilter>();
             });
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
+            {
+                opt.Password.RequireDigit = false;
+                opt.Password.RequiredLength = 5;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false; // sem caracteres especiais
+            })
                 .AddEntityFrameworkStores<TalkToApiContext>()
                 .AddDefaultTokenProviders();
 
@@ -199,6 +227,7 @@ namespace TalkToApi
             app.UseStatusCodePages();
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseCors(); // Desabilite quando usaratributos EnableCors/DisableCors
             app.UseMvc();
 
             app.UseSwagger();
